@@ -28,12 +28,12 @@ tradeOn <- 0 # THIS FLAG IS USED AS A SAFETY TO SEND THE ORDERS OR NOT. 1 = TRAN
       curPort <- data.frame(as.character(res2$local),as.numeric(as.character(res2$position)),stringsAsFactors = FALSE)
       colnames(curPort) <- c('id', 'SharesHeld')
       
-      ### OR USING IB_INSYNC, HERE'S ANOTHER WAY TO DOWNLOAD CAPITAL BALANCE AND CURRENT PORTFOLIO ###
-      # getBalance <- function(accountNumber)  ib2$accountSummary(account=accountNumber)[[21]]$value
+      ### OR USING IB_INSYNC AND RETICULATE LIBRARIES, HERE'S ANOTHER WAY TO DOWNLOAD CAPITAL BALANCE AND CURRENT PORTFOLIO ###
+      # getBalance <- function(accountNumber)  ib$accountSummary(account=accountNumber)[[21]]$value
       # 
       # getPositions <- function(accountNumber) {
       #   position.df <- data.frame()
-      #   position.insync <- ib2$positions(account=accountNumber)
+      #   position.insync <- ib$positions(account=accountNumber)
       #   for (i in 1:length(position.insync)) {
       #     position.df[i,1] <- position.insync[[i]]$contract$localSymbol
       #     position.df[i,2] <- position.insync[[i]]$position[1]
