@@ -1,5 +1,5 @@
 # autotrade
-Stock/ETF auto-trading code in R for use with Interactive Brokers' IBAPI
+Stock/ETF/futures auto-trading code in R for use with Interactive Brokers' IBAPI
 
 Here is the auto-trading code that I presented at R Finance 2018 in Chicago on June 2. It works with many backtesting platforms 
 because it accepts only 3 inputs: 
