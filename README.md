@@ -15,7 +15,7 @@ You need 3 things to make Auto-trade work:
 
 ONCE AUTOTRADE.R IS WORKING FOR YOU, THEN YOU CAN AUTOMATE YOUR TRADING/REBALANCING SCRIPTS IN LINUX USING CRON. IN WINDOWS, I THINK THE EQUIVALENT TO CRON IS CALLED TASK SCHEDULER (NOT SURE).
 
-I am actually a cardiac anesthesiologist; therefore, I have no formal computer science training. ANY CODE IMPROVEMENTS TO AUTOTRADE.R IS HIGHLY APPRECIATED.
+I am actually a cardiac anesthesiologist; therefore, I have no formal computer science training. ANY CODE IMPROVEMENTS TO AUTOTRADE.R IS HIGHLY APPRECIATED. This is just a skeleton script to get you started. More code is needed to handle other trading situations.
 
 DISCLAIMER: IF YOU USE ANY PART OF THIS AUTO-TRADING CODE, YOU FULLY ASSUME ALL THE FINANCIAL RISK ASSOCIATED WITH ITS USE.
 FOR EDUCATIONAL USE ONLY. NOT FOR PRODUCTION USE.
