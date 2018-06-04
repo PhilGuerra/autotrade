@@ -9,8 +9,9 @@ because it accepts only 2 inputs:
 You need 3 things to make Auto-trade work:
 1) Interactive Broker's API installed
 2) Python 3.6 installed
-3) https://github.com/erdewit/ib_insync - an amazing Python module
+3) https://github.com/erdewit/ib_insync - Excellent Python module to interface with IBAPI very easily
 
-I am a cardiac anesthesiologist; therefore: ANY CODE IMPROVEMENTS TO AUTOTRADE IS HIGHLY APPRECIATED.
+I am actually a cardiac anesthesiologist; therefore, I have no formal computer science training. ANY CODE IMPROVEMENTS TO AUTOTRADE.R IS HIGHLY APPRECIATED.
 
-DISCLAIMER: IF YOU USE ANY PART OF THIS AUTO-TRADING CODE IN ITS ORIGINAL OR UPDATED FORM, YOU FULLY AGREE TO ASSUME ALL FINANCIAL RISK ASSOCIATED WITH ITS USE.
+DISCLAIMER: IF YOU USE ANY PART OF THIS AUTO-TRADING CODE, YOU FULLY ASSUME ALL THE FINANCIAL RISK ASSOCIATED WITH ITS USE.
+FOR EDUCATIONAL USE ONLY. NOT FOR PRODUCTION USE.
