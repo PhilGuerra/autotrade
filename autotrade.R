@@ -11,6 +11,7 @@ tradeOn <- 0 # THIS FLAG IS USED AS A SAFETY TO SEND THE ORDERS OR NOT. 1 = TRAN
       # GLD  0.062441354  #<-- ALL THESE WEIGHTS NEED TO BE CONVERTED INTO ACTUAL SHARE NUMBERS!
       # BND  0.628828412
       # MTUM 0.302527563
+      # EXCEPT FOR buy.df, sell.df and df1 dataframes below, YOU MUST REMEMBER TO USE THE SAME "UNIVERSE" OF STOCKS AT ALL TIMES SO THAT THE DIFFERENT DATAFRAMES MATCH UP AND YOU DON'T GET AN ERROR.
 
 
 # 2. USING IBROKERS AND TWSINSTRUMENT, DOWNLOAD YOUR CAPITAL BALANCE AND YOUR CURRENT PORTFOLIO AT IB
@@ -45,13 +46,13 @@ tradeOn <- 0 # THIS FLAG IS USED AS A SAFETY TO SEND THE ORDERS OR NOT. 1 = TRAN
       # OF SHARES IN BOTH THE OLD/CURRENT PORTFOLIOAND NEW RECOMMENDED ALLOCATION
 
       ### CREATE AND MERGE WITH DUMMY DATAFRAME GET NEW RECOMMENDED ALLOCATION
-            # EXAMPLE: 
-            #         2018-06-04
+            # EXAMPLE 1. THIS SHOULD CONTAIN THE ENTIRE UNIVERSE OF STOCKS/FUTURES THAT ARE AVAILABLE IN YOUR STRATEGY. 
+            #         2018-06-04 (THE NEW, RECOMMENDED ALLOCATION FROM YOUR STRATEGY)
             # 6AM8             4
             # 6BM8             6
             # 6CM8             4
             # 6EM8             2
-            df <- as.data.frame(t(tail(round(YOUR_STRATEGY,0),1)))  # THIS IS THE MOST RECENT RECOMMENDED ALLOCATION OF YOUR STRATEGY I.E. THE NEW ALLOCATION THAT WILL REPLACE YOUR CURRENT PORTFOLIO IN #2 ABOVE
+            df <- as.data.frame(t(tail(round(YOUR_STRATEGY,0),1)))  # AS EXAMPLE 1, THIS IS THE MOST RECENT RECOMMENDED ALLOCATION OF YOUR STRATEGY I.E. THE NEW ALLOCATION THAT WILL REPLACE YOUR CURRENT PORTFOLIO IN #2 ABOVE
             df$id <- row.names(df)
             colnames(df) <- c('SharesHeld','id')
             df$SharesHeld <- 0 #DUMMY DATAFRAME
@@ -62,7 +63,7 @@ tradeOn <- 0 # THIS FLAG IS USED AS A SAFETY TO SEND THE ORDERS OR NOT. 1 = TRAN
             colnames(df1) <- c('id','prior','new')
             
       # CREATE DATAFRAME WITH PRIOR ALLOCATION AND NEW ALLOCATION
-            tmp <- as.data.frame(t(tail(round(YOUR_STRATEGY,0),1))) #THIS IS YOUR MOST RECENT ALLOCATION FROM YOUR STRATEGY AGAIN.
+            tmp <- as.data.frame(t(tail(round(YOUR_STRATEGY,0),1))) #THIS IS YOUR MOST RECENT ALLOCATION FROM YOUR STRATEGY - AGAIN.
             tmp$id <- row.names(tmp)
             colnames(tmp) <- c('SharesHeld','id')
             df1$new <- plyr::arrange(tmp, id) #?NOT NECESSARY IF SYMBOLNAMES IN ALPHABETICAL ORDER ALREADY?
@@ -74,21 +75,11 @@ tradeOn <- 0 # THIS FLAG IS USED AS A SAFETY TO SEND THE ORDERS OR NOT. 1 = TRAN
             # EXAMPLE:
             # > df1
             #         id prior new  sell (NEGATIVE NUMBERS HERE = BUY THOSE NUMBER OF SHARES. SEE NOTE BELOW)
-            # 1     AAPL     3   4    -1
-            # 2     TSLA     2   6    -4
+            # 1     6AM8     3   4    -1
+            # 2     6BM8     2   6    -4
             # 3     6CM8     3   4    -1
             # 4     6EM8     2   2     0
-            # 5     6JM8     0   0     0
-            # 6     6SM8     2   3    -1
-            # 7     BZQ8     1   1     0
-            # 8     CCN8     0   0     0
-            # 9     CTN8     0   1    -1
-            # 10    DXM8     0   0     0
-            # 11    ESM8     1   2    -1
-            # 12    GCN8     0   1    -1
-            # 13    GEM8     0   0     0
-            # 14    HGN8     0   0     0
-            # 15    HON8     0   0     0
+            # 
             # EXAMPLE: buy.df$sell will be what you BUY. sell.df$sell will be what you SELL.
             #         id prior new  sell* see note below!
             # 1     6AM8     3   4     1
