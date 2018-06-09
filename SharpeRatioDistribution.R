@@ -11,7 +11,7 @@ library(PerformanceAnalytics)
 ####################################
 ### Load Data and convert to XTS ###
 ####################################
-AcctUpdate <-(read.csv("~/Dropbox/WORK/FuturesSharpeMtm/AcctUpdate.csv",header=T,stringsAsFactors = FALSE))
+AcctUpdate <-(read.csv("~/AcctUpdate.csv",header=T,stringsAsFactors = FALSE))  # PROVIDE A COLUMN OF YOUR ALGO'S DAILY RETURNS HERE.
 AcctUpdate <- AcctUpdate[,-1]    
 AcctUpdate$Return <- as.xts(as.numeric(AcctUpdate$Return), order.by=as.Date(AcctUpdate[,1]),"%Y-%M-%D")
 
