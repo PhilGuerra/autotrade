@@ -38,6 +38,8 @@ table.Autocorrelation(AcctUpdate$Return, digits=4)
 ##############################################
 SharpeRatio.annualized(AcctUpdate$Return,scale=252)
 # Annualized Sharpe Ratio (Rf=0%) 2.637257 <<-- SHARPE RATIO IS ALSO CORROBORATED BY INTERACTIVE BROKERS RISK ANALYSIS DOCUMENT
+StdDev.annualized(AcctUpdate$Return,scale=252)
+# Annualized Standard Deviation 0.0923541
 
 ####################################### "The Statistics of Sharpe Ratios, Lo, A. 2002 AIMR"
 ### Calculate Sharpe Ratio variance ### w = (1+ 0.5SR^2)/N
