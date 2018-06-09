@@ -1,4 +1,4 @@
-# autotrade
+# autotrade.R
 Stock/ETF/futures auto-trading code in R for use with Interactive Brokers' IBAPI
 
 Why automate all your trading or portfolio rebalancing? Because I think it may improve your performance over the long run due to 
@@ -26,6 +26,9 @@ at all. However, autotrade.R will work as-is without additional code modificatio
 
 I have tested a more developed version of the autotrade.R code below that traded the futures markets every hour on the hour; the result 
 was that 100% of the trades occurred as planned and without any errors.
+
+# SharpeRatioDistribution.R
+This is just a quick and dirty way to determine the variance of your empirical Sharpe Ratio without having to bootstrap.
 
 DISCLAIMER: IF YOU USE ANY PART OF THIS AUTO-TRADING CODE, YOU ASSUME ALL RISK ASSOCIATED WITH ITS USE WHICH MAY INCLUDE BUT
 IS NOT LIMITED TO TOTAL LOSS OF PRICIPAL OR MORE.
