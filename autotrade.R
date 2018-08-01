@@ -1,6 +1,13 @@
 #### IF YOU USE ANY PART OF THIS CODE, YOU ASSUME ALl RISK ASSOCIATED WITH ITS USE - INCLUDING TOTAL LOSS OF PRINCIPAL
 #### FOR EDUCATIONAL USE ONLY - NOT FOR PRODUCTION USE!
-
+######################################################################################################
+# BEGIN RETICULATE PYTHON CODE #
+######################################################################################################
+#Sys.setenv(RETICULATE_PYTHON = "/opt/Python-3.6.3") # IF YOU INSTALL PYTHON CORRECTLY IN LINUX, YOU SHOULDN'T NEED THIS
+library(reticulate) 
+insync <- import("ib_insync")
+ib <- insync$IB()
+ib$connect( port = "4001" )
 tradeOn <- 0 # THIS FLAG IS USED AS A SAFETY TO SEND THE ORDERS OR NOT. 1 = TRANSMIT ORDERS. 0 = DON'T TRANSMIT.
 
 # 1. DETERMINE THE NEW ALLOCATION AS RECOMMENDED BY YOUR STRATEGY
@@ -16,34 +23,39 @@ tradeOn <- 0 # THIS FLAG IS USED AS A SAFETY TO SEND THE ORDERS OR NOT. 1 = TRAN
 
 
 # 2. USING IBROKERS AND TWSINSTRUMENT, DOWNLOAD YOUR CAPITAL BALANCE AND YOUR CURRENT PORTFOLIO AT IB
-      library(IBrokers)
-      library(twsInstrument)
-      eventWrapper = eWrapper()
-      tws  = twsConnect(clientId=110, port=4001) 
-      res1 = reqAccountUpdates(tws, subscribe = TRUE, eventWrapper = eWrapper(),  CALLBACK=twsCALLBACK)
-      res2 <- twsPortfolioValue(res1, zero.pos=FALSE)
-      capital = as.numeric(res1[[1]]$NetLiquidationByCurrency[1]) * 0.99 # LEAVE A LITTLE ROOM FOR COMMISSIONS
-      twsDisconnect(tws)
-      curPort <- res2 # THIS IS YOUR CURRENT PORTFOLIO AT IB
-      curPort <- data.frame(as.character(res2$local),as.numeric(as.character(res2$position)),stringsAsFactors = FALSE)
-      colnames(curPort) <- c('id', 'SharesHeld')
       
       ### OR USING IB_INSYNC AND RETICULATE LIBRARIES, HERE'S ANOTHER WAY TO DOWNLOAD CAPITAL BALANCE AND CURRENT PORTFOLIO ###
-      # getBalance <- function(accountNumber)  ib$accountSummary(account=accountNumber)[[21]]$value
-      # 
-      # getPositions <- function(accountNumber) {
-      #   position.df <- data.frame()
-      #   position.insync <- ib$positions(account=accountNumber)
-      #   for (i in 1:length(position.insync)) {
-      #     position.df[i,1] <- position.insync[[i]]$contract$localSymbol
-      #     position.df[i,2] <- position.insync[[i]]$position[1]
-      #     colnames(position.df) <- c('id','SharesHeld')
-      #   }
-      #   return(position.df)
-      # }
+      getBalance <- function(accountNumber)  ib$accountSummary(account=accountNumber)[[21]]$value
 
+      getPositions <- function(accountNumber) {
+        position.df <- data.frame()
+        position.insync <- ib$positions(account=accountNumber)
+        if ( length(position.insync) > 0 ) { 
+          for (i in 1:length(position.insync)) {
+            position.df[i,1] <- position.insync[[i]]$contract$localSymbol
+            position.df[i,2] <- position.insync[[i]]$position[1]
+            colnames(position.df) <- c('id','SharesHeld')
+          }
 
-# 3. CREATE A DATAFRAME THAT HOLDS BOTH THE OLF/PRIOR ALLOCATION (I.E. CURRENT PORTFOLIO) AND THE NEW ALLOCATION (AS RECOMMENDED BY YOUR STRATEGY) - 
+          return(position.df)
+        } # end IF
+      } # end FUNCTION
+      
+      # CAN USE IBROKERS ALSO TO DOWNLOAD PORTFOLIO NET LIQUIDATING VALUE
+      #library(IBrokers)
+      #library(twsInstrument)
+      #eventWrapper = eWrapper()
+      #tws  = twsConnect(clientId=110, port=4001) 
+      #res1 = reqAccountUpdates(tws, subscribe = TRUE, eventWrapper = eWrapper(),  CALLBACK=twsCALLBACK)
+      #res2 <- twsPortfolioValue(res1, zero.pos=FALSE)
+      #capital = as.numeric(res1[[1]]$NetLiquidationByCurrency[1]) * 0.99 # LEAVE A LITTLE ROOM FOR COMMISSIONS
+      #twsDisconnect(tws)
+      #curPort <- res2 # THIS IS YOUR CURRENT PORTFOLIO AT IB
+      #curPort <- data.frame(as.character(res2$local),as.numeric(as.character(res2$position)),stringsAsFactors = FALSE)
+      #colnames(curPort) <- c('id', 'SharesHeld')
+      
+
+# 3. CREATE A DATAFRAME THAT HOLDS BOTH THE OLD/PRIOR ALLOCATION (I.E. WHAT'S CURRENTLY IN YOUR PORTFOLIO) AND THE NEW ALLOCATION (AS RECOMMENDED BY YOUR STRATEGY) - 
       # INCLUDING THE NUMBER OF SHARES IN BOTH THE OLD/CURRENT PORTFOLIO AND THE NEW RECOMMENDED ALLOCATION
 
       ### CREATE AND MERGE WITH DUMMY DATAFRAME GET NEW RECOMMENDED ALLOCATION
@@ -56,24 +68,24 @@ tradeOn <- 0 # THIS FLAG IS USED AS A SAFETY TO SEND THE ORDERS OR NOT. 1 = TRAN
             # 6CM8             4
             # 6EM8             2
             #
-            df <- as.data.frame(t(tail(round(YOUR_STRATEGY,0),1)))  # AS IN EXAMPLE ABOVE, THIS IS THE MOST RECENT RECOMMENDED ALLOCATION OF YOUR STRATEGY I.E. THE NEW ALLOCATION THAT WILL REPLACE YOUR CURRENT PORTFOLIO IN #2 ABOVE
+            ### DOWNLOAD BALANCE
+            curPortNULL = 0
+            curPort <- getPositions('UXXXXXXX')
+            if ( is.null(curPort) ) curPort <- data.frame('id' = NA, 'SharesHeld' = NA); curPortNULL = 1 # 1= CURRENT PORTFOLIO IS EMPTY
+            capital <- as.numeric(getBalance('UXXXXXXX'))
+            ib$sleep(0)
+            ### CREATE AND MERGE WITH DUMMY DATAFRAME GET NEW RECOMMENDED ALLOCATION
+            df <- as.data.frame(t(tail(round(YOURSTRATEGY,0),1)))
             df$id <- row.names(df)
             colnames(df) <- c('SharesHeld','id')
-            df$SharesHeld <- 0 #DUMMY DATAFRAME
-      
-      ### MERGE IB PORTFOLIO AND NEW RECOMMENDED ALLOCATION
+            #df$SharesHeld <- 0 #DUMMY DATAFRAME
+
+            ### MERGE IB PORTFOLIO AND NEW RECOMMENDED ALLOCATION
             df1 <- merge(curPort,df,by='id',all=TRUE)
             df1[is.na(df1)] <- 0
             colnames(df1) <- c('id','prior','new')
-            
-      # CREATE DATAFRAME WITH PRIOR ALLOCATION AND NEW ALLOCATION
-            tmp <- as.data.frame(t(tail(round(YOUR_STRATEGY,0),1))) #THIS IS YOUR MOST RECENT ALLOCATION FROM YOUR STRATEGY - AGAIN.
-            tmp$id <- row.names(tmp)
-            colnames(tmp) <- c('SharesHeld','id')
-            df1$new <- plyr::arrange(tmp, id) #?NOT NECESSARY IF SYMBOLNAMES IN ALPHABETICAL ORDER ALREADY?
-            colnames(df1) <- c('id','prior','new')
-            df1 <- data.frame(df1$id,df1$prior,df1$new$SharesHeld)
-            colnames(df1) <- c('id','prior','new')
+            if (curPortNULL == 1 ) df1 <- df1[-nrow(df1),]  ### A NULL CURPORT HAS ONE ROW. REMOVE THIS ROW.
+
 
 # 4. CREATE BUY AND SELL DATAFRAMES
             # EXAMPLE:
@@ -90,21 +102,19 @@ tradeOn <- 0 # THIS FLAG IS USED AS A SAFETY TO SEND THE ORDERS OR NOT. 1 = TRAN
             # 2     6BM8     2   6     4
             # 3     6CM8     3   4     1
             # 6     6EM8     2   2     0
-            df1$sell <- df1$prior - df1$new  #THIS COLUMN "SELL" IS ACTUALLY BOTH A BUY AND SELL COLUMN. POSITIVE NUMBER = NUMBER OF SHARES TO SELL, NEGATIVE NUMBER = NUMBER TO BUY.
+    
+            df1$sell <- df1$prior - df1$new  #COLUMN DF1$SELL IS A BUY *AND* SELL COLUMN. NEGATIVE NUMBER = BUY.
             sell.df <- data.frame(df1[df1$sell > 0, ],stringsAsFactors = FALSE)
             sell.df$id <- as.character(sell.df$id)
             buy.df  <- data.frame(df1[df1$sell < 0, ],stringsAsFactors = FALSE)
             buy.df$sell <- abs(buy.df$sell)
             buy.df$id <- as.character(buy.df$id)
 
-######################################################################################################
-# BEGIN RETICULATE PYTHON CODE #
-######################################################################################################
-Sys.setenv(RETICULATE_PYTHON = "/opt/Python-3.6.3") # IF YOU INSTALL PYTHON CORRECTLY IN LINUX, YOU SHOULDN'T NEED THIS
-library(reticulate) 
-insync <- import("ib_insync")
-ib <- insync$IB()
-ib$connect( port = "4001" )
+            print(sell.df)
+            print(buy.df)
+       
+
+
 ###################
 ### SELL ORDERS ###
 ###################
@@ -126,7 +136,7 @@ if (nrow(sell.df) > 0 ) {
     
     print(order)
     if (tradeOn == 1) trade = ib$placeOrder(conContract,order) #tradeOn is my safety. 1 = yes transmit the trade. 0 = don't transmit order.
-    
+    ib$sleep(0)
   }
   
 }
@@ -152,7 +162,7 @@ if (nrow(buy.df) > 0 ) {
     
     print(order)
     if (tradeOn == 1) trade = ib$placeOrder(conContract,order)
-    
+    ib$sleep(0)
   }
   
 }
